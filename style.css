@@ -68,6 +68,14 @@ select {
   font: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
+span {
+  font-weight: bold;
+}
+
 /* Remove all animations and transitions for people that prefer not to see them */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -98,7 +106,7 @@ h2 {
 
 .main-paper {
   background-color: #ffffff;
-  width: 50%;
+  width: 55%;
   margin: 50px auto;
   padding: 50px 5%;
   font-size: 16px;
@@ -120,6 +128,79 @@ h2 {
   width: 100%;
   margin: 25px auto;
   padding: -1px;
+}
+
+.mips-code {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-weight: bold;
+}
+
+.simulator {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  flex-direction: column;
+  width: 100%;
+  height: 450px;
+  margin: 25px auto;
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.current-cycle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.current-cycle-info {
+  min-width: 150px;
+}
+
+.register-bank {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+.register {
+  border: 1px solid black;
+  width: 23%;
+  height: 100%;
+}
+
+.reg-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  border-bottom: 1px solid black;
+}
+
+.reg-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  height: calc(100% - 30px);
+}
+
+.data {
+  text-align: center;
+  font-size: 13px;
+}
+
+.sim-buttons {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 @media only screen and (max-width: 800px) {
