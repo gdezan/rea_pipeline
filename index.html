@@ -1,340 +1,359 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Arquitetura MIPS Pipeline</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,300&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="shortcut icon" href="assets/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="assets/favicon.ico" type="image/x-icon" />
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>REA</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,300&display=swap"
-    rel="stylesheet" />
-</head>
+  <body>
+    <div class="main-paper">
+      <h1>MIPS Pipeline</h1>
+      <h2>
+        O que é o pipeline?
+      </h2>
+      O pipeline é uma forma de otimizar a arquitetura multiciclo, cujas
+      instruções são dividas em várias etapas diferentes. A diferença entre a
+      multiciclo e a pipeline é que, na pipeline, as etapas são sobrepostas.
+      Essa ideia vem do princípio de não deixar partes da arquitetura ociosas,
+      enquanto elas poderiam estar fazendo algum trabalho. Exemplificando em
+      termos mais simples, o pipeline seria uma cozinha de um restaurante e as
+      instruções, os pedidos. Enquanto um chef vai trabalhando em uma etapa de
+      um pedido, ele também já está fazendo uma outra etapa de outro.
 
-<body>
-  <div class="main-paper">
-    <h1>MIPS Pipeline</h1>
-    <h2>
-      O que é o pipeline?
-    </h2>
-    O pipeline é uma forma de otimizar a arquitetura multiciclo, cujas
-    instruções são dividas em várias etapas diferentes. A diferença entre a
-    multiciclo e a pipeline é que, na pipeline, as etapas são sobrepostas.
-    Essa ideia vem do princípio de não deixar partes da arquitetura ociosas,
-    enquanto elas poderiam estar fazendo algum trabalho. Exemplificando em
-    termos mais simples, o pipeline seria uma cozinha de um restaurante e as
-    instruções, os pedidos. Enquanto um chef vai trabalhando em uma etapa de
-    um pedido, ele também já está fazendo uma outra etapa de outro.
+      <video muted autoplay loop class="animated" id="no_pipeline">
+        <source src="assets/no_pipeline.webm" type="video/webm" />
+      </video>
+      <video muted autoplay loop class="animated" id="no_pipeline">
+        <source src="assets/with_pipeline.webm" type="video/webm" />
+      </video>
 
-    <video muted autoplay loop class="animated" id="no_pipeline">
-      <source src="assets/no_pipeline.webm" type="video/webm" />
-    </video>
-    <video muted autoplay loop class="animated" id="no_pipeline">
-      <source src="assets/with_pipeline.webm" type="video/webm" />
-    </video>
+      <h2>Observações sobre o pipeline</h2>
+      <ul>
+        <li>
+          O pipeline não diminui o tempo de execução das instruções, mas sim
+          aumenta o número de instruções executadas em um dado período de tempo;
+        </li>
+        <li>
+          Além disso, visto que as etapas são interligadas (a anterior depende
+          da próxima terminar para poder executar), então elas devem ter o mesmo
+          tamanho, que é definido pela etapa mais demorada, geralmente a de
+          acesso à memória;
+        </li>
+        <li>
+          Visto que cada etapa do pipeline pertence a uma instrução diferente,
+          são inseridos bancos de registradores entre as etapas para guardar os
+          dados necessários para a execução das mesmas;
+        </li>
+        <li>
+          Para instruções que não utilizam todas as etapas do pipeline, ainda
+          assim elas passam pela etapa; não há como pular as etapas.
+        </li>
+      </ul>
 
-    <h2>Observações sobre o pipeline</h2>
-    <ul>
-      <li>
-        O pipeline não diminui o tempo de execução das instruções, mas sim
-        aumenta o número de instruções executadas em um dado período de tempo;
-      </li>
-      <li>
-        Além disso, visto que as etapas são interligadas (a anterior depende
-        da próxima terminar para poder executar), então elas devem ter o mesmo
-        tamanho, que é definido pela etapa mais demorada, geralmente a de
-        acesso à memória;
-      </li>
-      <li>
-        Visto que cada etapa do pipeline pertence a uma instrução diferente,
-        são inseridos bancos de registradores entre as etapas para guardar os
-        dados necessários para a execução das mesmas;
-      </li>
-      <li>
-        Para instruções que não utilizam todas as etapas do pipeline, ainda
-        assim elas passam pela etapa; não há como pular as etapas.
-      </li>
-    </ul>
+      <h2>
+        Etapas do pipeline
+      </h2>
+      <p>
+        O pipeline geralmente é dividido em cinco etapas principais: a etapa de
+        busca, a de decodificação, a de execução, a de acesso à memória e a de
+        writeback, que seria a de escrita dos resultados.
+      </p>
+      <p>
+        Exemplificando com uma instrução de load word:
+      </p>
+      <ul>
+        <li>
+          busca: a instrução é buscada na memória de instrução;
+        </li>
+        <li>
+          decodificação: a instrução é decodificada e é lido do banco de
+          registradores o valor contido no registrador base;
+        </li>
+        <li>
+          execução: é calculado o valor do endereço que se deseja ler da memória
+          (o endereço contido no registrador base + o offset);
+        </li>
+        <li>
+          acesso à memória: o endereço resultante da etapa anterior é acessado e
+          seu valor, lido;
+        </li>
+        <li>
+          writeback: o valor lido da memória é escrito no registrador destino.
+        </li>
+      </ul>
 
-    <h2>
-      Etapas do pipeline
-    </h2>
-    <p>
-      O pipeline geralmente é dividido em cinco etapas principais: a etapa de
-      busca, a de decodificação, a de execução, a de acesso à memória e a de
-      writeback, que seria a de escrita dos resultados.
-    </p>
-    <p>
-      Exemplificando com uma instrução de load word:
-    </p>
-    <ul>
-      <li>
-        busca: a instrução é buscada na memória de instrução;
-      </li>
-      <li>
-        decodificação: a instrução é decodificada e é lido do banco de
-        registradores o valor contido no registrador base;
-      </li>
-      <li>
-        execução: é calculado o valor do endereço que se deseja ler da memória
-        (o endereço contido no registrador base + o offset);
-      </li>
-      <li>
-        acesso à memória: o endereço resultante da etapa anterior é acessado e
-        seu valor, lido;
-      </li>
-      <li>
-        writeback: o valor lido da memória é escrito no registrador destino.
-      </li>
-    </ul>
-
-    <h2>Bancos de registradores</h2>
-    <p>
-      Conforme mencionado dentre as observações sobre o pipeline, entre as
-      etapas são inseridos bancos de registradores responsáveis por guardar os
-      dados necessários para a execução das mesmas. Esses bancos são nomeados
-      em função das etapas. Visto que são cinco etapas, então são quatro
-      registradores entre elas:
-    </p>
-    <ul>
-      <li>
-        IF/ID: banco de registradores entre a etapa de busca e a de
-        decodificação. Ele guarda os seguintes dados:
-        <ul>
-          <li>
-            NPC: o “new PC”; ele guarda o valor da posição de memória da
-            próxima instrução, ou seja, PC + 4;
-          </li>
-          <li>
-            IR: ele é o instruction register; ele guarda a instrução que foi
-            lida da memória.
-          </li>
-        </ul>
-      </li>
-      <li>
-        ID/EX: banco entre a etapa de decodificação e a de execução. Os dados
-        que ele guarda são:
-        <ul>
-          <li>NPC: é o mesmo valor guardado em IF/ID.NPC;</li>
-          <li>
-            A: corresponde ao valor lido do primeiro operando das instruções;
-          </li>
-          <li>B: corresponde ao valor lido do segundo operando;</li>
-          <li>Imm: é o valor imediato para as instruções do tipo I;</li>
-          <li>
-            [20-16]: correspondem aos bits das posições 16 à 20 da instrução.
-            Definem o registrador destino em instruções do tipo I;
-          </li>
-          <li>
-            [15-11]: correspondem aos bits das posições 11 à 15 da instrução.
-            Definem o registrador destino em instruções do tipo R;
-          </li>
-        </ul>
-      </li>
-      <li>
-        EX/MEM: o banco entre a etapa de execução e a de acesso à memória.
-        Seus dados são:
-        <ul>
-          <li>
-            BranchTarget: guarda o endereço calculado para instruções de
-            branch. Ele corresponde ao valor do NPC (PC + 4) somado ao valor
-            imediato * 4;
-          </li>
-          <li>
-            Zero: é o valor resultante da flag de zero da ULA, necessário em
-            algumas operações de branch, como por exemplo a beq (ele serve
-            para indicar se os valores são iguais ao subtraí-los);
-          </li>
-          <li>ALUOutput: é o resultado que sai da ULA;</li>
-          <li>B: é o mesmo valor de ID/EX.B;</li>
-          <li>
-            rd: define o registrador destino para a instrução em questão; ele
-            é o resultado de um MUX entre ID/EX.[20-16] e ID/EX.[15-11].
-          </li>
-        </ul>
-      </li>
-      <li>
-        MEM/WB: o último banco e ele fica entre as etapas de acesso à memória
-        e writeback.
-        <ul>
-          <li>
-            LMD: é o “load memory data”, ou seja, o valor lido da memória
-            contido no endereço apontado por EX/MEM.ALUOutput;
-          </li>
-          <li>
-            ALUOutput: o mesmo valor apontado por EX/MEM.ALUOutput; ele serve
-            para operações do tipo R, por exemplo, cujo resultado deve ser
-            escrito na memória;
-          </li>
-          <li>rd: é o mesmo valor de EX/MEM.rd.</li>
-        </ul>
-      </li>
-    </ul>
-    <h2>Sinais de controle</h2>
-    <p>
-      Assim como devemos guardar os dados em bancos de registradores para a
-      execução correta das instruções em cada etapa, também é necessário
-      guardar os sinais de controle, que também variam de instrução para
-      instrução.
-    </p>
-    <p>
-      Para tanto, os sinais são guardados da seguinte forma: na etapa de
-      decodificação, os sinais são gerados pela unidade de controle através da
-      leitura do valor da instrução em binário. Esses sinais são:
-    </p>
-    <ul>
-      <li>
-        RegDst: ele define qual o destino de escrita da instrução; se é o
-        endereço definido por ID/EX.[20-16] ou se o definido por
-        ID/EX.[15-11];
-      </li>
-      <li>
-        ALUSrc: define qual o segundo operando da ULA; se é o valor de ID/EX.B
-        ou se é ID/EX.Imm;
-      </li>
-      <li>ALUOp: define qual operação será executada pela ULA;</li>
-      <li>
-        MemRead: define se deve ser feita uma leitura na memória do endereço
-        apontado por EX/MEM.ALUOutput;
-      </li>
-      <li>
-        MemWrite: define se deve ser feita uma escrita na memória no endereço
-        apontado por EX/MEM.ALUOutput do valor apontado por EX/MEM.B;
-      </li>
-      <li>Branch: define se a operação realizada é de branch.</li>
-      <li>
-        RegWrite: define se deve ser feita uma escrita no banco de
-        registradores ou não;
-      </li>
-      <li>
-        MemToReg: define qual dado será escrito de volta no registrador
-        destino apontado por MEM/WB.rd; se MEM/WB.ALUOutput ou se MEM/WB.LMD.
-      </li>
-    </ul>
-    <p>
-      Porém visto que esses sinais são utilizados somente em determinadas
-      etapas, eles são agrupados por etapas:
-    </p>
-    <ul>
-      <li>
-        EX:
-        <ul>
-          <li>
-            ALUSrc;
-          </li>
-          <li>
-            RegDst;
-          </li>
-          <li>
-            ALUOp.
-          </li>
-        </ul>
-      </li>
-      <li>
-        MEM:
-        <ul>
-          <li>
-            MemRead;
-          </li>
-          <li>
-            MemWrite;
-          </li>
-          <li>
-            Branch.
-          </li>
-        </ul>
-      </li>
-      <li>
-        WB:
-        <ul>
-          <li>
-            RegWrite;
-          </li>
-          <li>
-            MemToReg.
-          </li>
-        </ul>
-      </li>
-    </ul>
-    <p>
-      Dessa forma, após separar em etapas, basta passar os sinais até a etapa
-      que eles serão utilizados. Ou seja, o banco ID/EX guarda todos os
-      sinais, o EX/MEM guarda os sinais de MEM e WB e o MEM/WB, somente o de
-      WB.
-    </p>
-    <h2>Simulação de execução de código</h2>
-    <p>Logo abaixo, temos um simulador que executa um código em uma arquitetura pipeline. Em relação aos sinais de
-      controle, foram colocados em cada registrador somente os sinais referentes à etapa seguinte ao registrador. Para
-      ir pulando as etapas,
-      basta clicar no botão abaixo do diagrama. O código é o seguinte:</p>
-    <div class='mips-code'>
-      <p>add $t0, $t1, $t2</p>
-      <p>lw $t4, 4($t5)</p>
-      <p>or $t3, $t1, $t5</p>
-      <p>sw $t2, 0($sp)</p>
-    </div>
-    <div class='simulator'>
-      <div class='current-cycle'>
-        <div class='current-cycle-info'>Ciclo de clock: <span id='clock-cycle'>0</span></div>
-        <div class='current-cycle-info'>PC: <span id='pc-counter'>0</span></div>
+      <h2>Bancos de registradores</h2>
+      <p>
+        Conforme mencionado dentre as observações sobre o pipeline, entre as
+        etapas são inseridos bancos de registradores responsáveis por guardar os
+        dados necessários para a execução das mesmas. Esses bancos são nomeados
+        em função das etapas. Visto que são cinco etapas, então são quatro
+        registradores entre elas:
+      </p>
+      <ul>
+        <li>
+          IF/ID: banco de registradores entre a etapa de busca e a de
+          decodificação. Ele guarda os seguintes dados:
+          <ul>
+            <li>
+              NPC: o “new PC”; ele guarda o valor da posição de memória da
+              próxima instrução, ou seja, PC + 4;
+            </li>
+            <li>
+              IR: ele é o instruction register; ele guarda a instrução que foi
+              lida da memória.
+            </li>
+          </ul>
+        </li>
+        <li>
+          ID/EX: banco entre a etapa de decodificação e a de execução. Os dados
+          que ele guarda são:
+          <ul>
+            <li>NPC: é o mesmo valor guardado em IF/ID.NPC;</li>
+            <li>
+              A: corresponde ao valor lido do primeiro operando das instruções;
+            </li>
+            <li>B: corresponde ao valor lido do segundo operando;</li>
+            <li>Imm: é o valor imediato para as instruções do tipo I;</li>
+            <li>
+              [20-16]: correspondem aos bits das posições 16 à 20 da instrução.
+              Definem o registrador destino em instruções do tipo I;
+            </li>
+            <li>
+              [15-11]: correspondem aos bits das posições 11 à 15 da instrução.
+              Definem o registrador destino em instruções do tipo R;
+            </li>
+          </ul>
+        </li>
+        <li>
+          EX/MEM: o banco entre a etapa de execução e a de acesso à memória.
+          Seus dados são:
+          <ul>
+            <li>
+              BranchTarget: guarda o endereço calculado para instruções de
+              branch. Ele corresponde ao valor do NPC (PC + 4) somado ao valor
+              imediato * 4;
+            </li>
+            <li>
+              Zero: é o valor resultante da flag de zero da ULA, necessário em
+              algumas operações de branch, como por exemplo a beq (ele serve
+              para indicar se os valores são iguais ao subtraí-los);
+            </li>
+            <li>ALUOutput: é o resultado que sai da ULA;</li>
+            <li>B: é o mesmo valor de ID/EX.B;</li>
+            <li>
+              rd: define o registrador destino para a instrução em questão; ele
+              é o resultado de um MUX entre ID/EX.[20-16] e ID/EX.[15-11].
+            </li>
+          </ul>
+        </li>
+        <li>
+          MEM/WB: o último banco e ele fica entre as etapas de acesso à memória
+          e writeback.
+          <ul>
+            <li>
+              LMD: é o “load memory data”, ou seja, o valor lido da memória
+              contido no endereço apontado por EX/MEM.ALUOutput;
+            </li>
+            <li>
+              ALUOutput: o mesmo valor apontado por EX/MEM.ALUOutput; ele serve
+              para operações do tipo R, por exemplo, cujo resultado deve ser
+              escrito na memória;
+            </li>
+            <li>rd: é o mesmo valor de EX/MEM.rd.</li>
+          </ul>
+        </li>
+      </ul>
+      <h2>Sinais de controle</h2>
+      <p>
+        Assim como devemos guardar os dados em bancos de registradores para a
+        execução correta das instruções em cada etapa, também é necessário
+        guardar os sinais de controle, que também variam de instrução para
+        instrução.
+      </p>
+      <p>
+        Para tanto, os sinais são guardados da seguinte forma: na etapa de
+        decodificação, os sinais são gerados pela unidade de controle através da
+        leitura do valor da instrução em binário. Esses sinais são:
+      </p>
+      <ul>
+        <li>
+          RegDst: ele define qual o destino de escrita da instrução; se é o
+          endereço definido por ID/EX.[20-16] ou se o definido por
+          ID/EX.[15-11];
+        </li>
+        <li>
+          ALUSrc: define qual o segundo operando da ULA; se é o valor de ID/EX.B
+          ou se é ID/EX.Imm;
+        </li>
+        <li>ALUOp: define qual operação será executada pela ULA;</li>
+        <li>
+          MemRead: define se deve ser feita uma leitura na memória do endereço
+          apontado por EX/MEM.ALUOutput;
+        </li>
+        <li>
+          MemWrite: define se deve ser feita uma escrita na memória no endereço
+          apontado por EX/MEM.ALUOutput do valor apontado por EX/MEM.B;
+        </li>
+        <li>Branch: define se a operação realizada é de branch.</li>
+        <li>
+          RegWrite: define se deve ser feita uma escrita no banco de
+          registradores ou não;
+        </li>
+        <li>
+          MemToReg: define qual dado será escrito de volta no registrador
+          destino apontado por MEM/WB.rd; se MEM/WB.ALUOutput ou se MEM/WB.LMD.
+        </li>
+      </ul>
+      <p>
+        Porém visto que esses sinais são utilizados somente em determinadas
+        etapas, eles são agrupados por etapas:
+      </p>
+      <ul>
+        <li>
+          EX:
+          <ul>
+            <li>
+              ALUSrc;
+            </li>
+            <li>
+              RegDst;
+            </li>
+            <li>
+              ALUOp.
+            </li>
+          </ul>
+        </li>
+        <li>
+          MEM:
+          <ul>
+            <li>
+              MemRead;
+            </li>
+            <li>
+              MemWrite;
+            </li>
+            <li>
+              Branch.
+            </li>
+          </ul>
+        </li>
+        <li>
+          WB:
+          <ul>
+            <li>
+              RegWrite;
+            </li>
+            <li>
+              MemToReg.
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <p>
+        Dessa forma, após separar em etapas, basta passar os sinais até a etapa
+        que eles serão utilizados. Ou seja, o banco ID/EX guarda todos os
+        sinais, o EX/MEM guarda os sinais de MEM e WB e o MEM/WB, somente o de
+        WB.
+      </p>
+      <h2>Simulação de execução de código</h2>
+      <p>
+        Logo abaixo, temos um simulador que executa um código em uma arquitetura
+        pipeline. Em relação aos sinais de controle, foram colocados em cada
+        registrador somente os sinais referentes à etapa seguinte ao
+        registrador. Para ir pulando as etapas, basta clicar no botão abaixo do
+        diagrama. O código é o seguinte:
+      </p>
+      <div class="mips-code">
+        <p>add $t0, $t1, $t2</p>
+        <p>lw $t4, 4($t5)</p>
+        <p>or $t3, $t1, $t5</p>
+        <p>sw $t2, 0($sp)</p>
       </div>
-      <div class='register-bank'>
-        <div class='register'>
-          <div class='reg-name'>IF/ID</div>
-          <div class='reg-data'>
-            <div class='data'>NPC: <span id='ifid-npc'></span></div>
-            <div class='data' style="display: flex; flex-direction: column;">IR: <span id='ir'></span></div>
+      <div class="simulator">
+        <div class="current-cycle">
+          <div class="current-cycle-info">
+            Ciclo de clock: <span id="clock-cycle">0</span>
+          </div>
+          <div class="current-cycle-info">
+            PC: <span id="pc-counter">0</span>
           </div>
         </div>
-        <div class='register'>
-          <div class='reg-name'>ID/EX</div>
-          <div class='reg-data'>
-            <div class='data'>ALUSrc: <span id='alusrc'></span></div>
-            <div class='data'>RegDst: <span id='regdst'></span></div>
-            <div class='data'>ALUOp: <span id='aluop'></span></div>
-            <div class='data'>NPC: <span id='idex-npc'></span></div>
-            <div class='data'>A: <span id='idex-a'></span></div>
-            <div class='data'>B: <span id='idex-b'></span></div>
-            <div class='data'>Imm: <span id='imm'></span></div>
-            <div class='data'>[20-16]: <span id='rd-i'></span></div>
-            <div class='data'>[15-11]: <span id='rd-r'></span></div>
-          </div>
-        </div>
-        <div class='register'>
-          <div class='reg-name'>EX/MEM</div>
-          <div class='reg-data'>
-            <div class='data'>MemRead: <span id='memread'></span></div>
-            <div class='data'>MemWrite: <span id="memwrite"></span></div>
-            <div class='data'>Branch: <span id="branch"></span></div>
-            <div class='data'>BranchTarget: <span id="branchtarget"></span></div>
-            <div class='data'>Zero: <span id="zero"></span></div>
-            <div class='data' style="display: flex; flex-direction: column;">ALUOutput: <span id="exmem-aluout"></span>
+        <div class="register-bank">
+          <div class="register">
+            <div class="reg-name">IF/ID</div>
+            <div class="reg-data">
+              <div class="data">NPC: <span id="ifid-npc"></span></div>
+              <div class="data" style="display: flex; flex-direction: column;">
+                IR: <span id="ir"></span>
+              </div>
             </div>
-            <div class='data'>B: <span id="exmem-b"></span></div>
-            <div class='data'>rd: <span id="exmem-rd"></span></div>
           </div>
-        </div>
-        <div class='register'>
-          <div class='reg-name'>MEM/WB</div>
-          <div class='reg-data'>
-            <div class='data'>RegWrite: <span id="regwrite"></span></div>
-            <div class='data'>MemToReg: <span id="memtoreg"></span></div>
-            <div class='data' style="display: flex; flex-direction: column;">LMD: <span id="lmd"></span></div>
-            <div class='data' style="display: flex; flex-direction: column;">ALUOutput: <span id="memwb-aluout"></span>
+          <div class="register">
+            <div class="reg-name">ID/EX</div>
+            <div class="reg-data">
+              <div class="data">ALUSrc: <span id="alusrc"></span></div>
+              <div class="data">RegDst: <span id="regdst"></span></div>
+              <div class="data">ALUOp: <span id="aluop"></span></div>
+              <div class="data">NPC: <span id="idex-npc"></span></div>
+              <div class="data">A: <span id="idex-a"></span></div>
+              <div class="data">B: <span id="idex-b"></span></div>
+              <div class="data">Imm: <span id="imm"></span></div>
+              <div class="data">[20-16]: <span id="rd-i"></span></div>
+              <div class="data">[15-11]: <span id="rd-r"></span></div>
             </div>
-            <div class='data'>rd: <span id="memwb-rd"></span></div>
+          </div>
+          <div class="register">
+            <div class="reg-name">EX/MEM</div>
+            <div class="reg-data">
+              <div class="data">MemRead: <span id="memread"></span></div>
+              <div class="data">MemWrite: <span id="memwrite"></span></div>
+              <div class="data">Branch: <span id="branch"></span></div>
+              <div class="data">
+                BranchTarget: <span id="branchtarget"></span>
+              </div>
+              <div class="data">Zero: <span id="zero"></span></div>
+              <div class="data" style="display: flex; flex-direction: column;">
+                ALUOutput: <span id="exmem-aluout"></span>
+              </div>
+              <div class="data">B: <span id="exmem-b"></span></div>
+              <div class="data">rd: <span id="exmem-rd"></span></div>
+            </div>
+          </div>
+          <div class="register">
+            <div class="reg-name">MEM/WB</div>
+            <div class="reg-data">
+              <div class="data">RegWrite: <span id="regwrite"></span></div>
+              <div class="data">MemToReg: <span id="memtoreg"></span></div>
+              <div class="data" style="display: flex; flex-direction: column;">
+                LMD: <span id="lmd"></span>
+              </div>
+              <div class="data" style="display: flex; flex-direction: column;">
+                ALUOutput: <span id="memwb-aluout"></span>
+              </div>
+              <div class="data">rd: <span id="memwb-rd"></span></div>
+            </div>
           </div>
         </div>
       </div>
+      <div class="sim-buttons">
+        <button onclick="restartClock()">Reiniciar</button>
+        <button onclick="incrementClockCounter()">Incrementar clock</button>
+      </div>
     </div>
-    <div class='sim-buttons'>
-      <button onclick="restartClock()">Reiniciar</button>
-      <button onclick="decrementClockCounter()">Decrementar clock</button>
-      <button onclick="incrementClockCounter()">Incrementar clock</button>
-    </div>
-  </div>
 
-  <script src="script.js"></script>
-</body>
-
+    <script src="script.js"></script>
+  </body>
 </html>

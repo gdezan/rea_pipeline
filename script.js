@@ -207,18 +207,6 @@ const incrementClockCounter = () => {
   })
 }
 
-const decrementClockCounter = () => {
-  let clock = parseInt(document.getElementById('clock-cycle').innerHTML)
-  if (clock > 1) {
-    clock = clock - 2
-    Object.keys(data[clock]).forEach(id => {
-      document.getElementById(id).innerHTML = data[clock][id]
-    })
-  } else {
-    restartClock()
-  }
-}
-
 const restartClock = () => {
   const clock0 = {
     'clock-cycle': 0,
